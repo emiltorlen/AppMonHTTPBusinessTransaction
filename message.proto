@@ -1,0 +1,75 @@
+syntax = "proto2";
+ 
+option java_package = "com.dynatrace.diagnostics.core.realtime.export";
+ 
+option optimize_for = SPEED;
+ 
+package export.bt;
+ 
+message BusinessTransactions {
+    repeated BusinessTransaction businessTransactions = 1;      //exported business transactions in this message
+    optional int32 lostTransactions = 2;        //number of lost transactions, not used currently
+    optional string serverName = 3;             //name of dynatrace server
+}
+message BusinessTransaction {
+    required string name = 1;                   //name of business transaction
+    enum Type {                                 //possible types of business transactions
+        PUREPATH = 0;
+        USER_ACTION = 1;
+        VISIT = 2;
+    }
+    optional Type type = 2;                     //type of business transaction
+    optional string application = 3;            //application of business transaction
+    repeated string measureNames = 4;           //result measure names
+    repeated string dimensionNames = 5;         //splitting measure names
+    repeated BtOccurrence occurrences = 6;      //bt results for purepaths/user actions/visits
+    optional string systemProfile = 7;          //system profile the business transaction belongs to
+}
+message BtOccurrence {
+    required int64 startTime = 1;               //java time stamp; start time of purepath/visit
+    optional int64 endTime = 2;                 //java time stamp; end time of visit
+    optional string purePathId = 5;             //id of purepath; e.g. "PT=9839;PA=856374981;PS=-1690199182"
+    repeated double values = 6;                 //values of result-measures
+    repeated string dimensions = 7;             //splittings
+    optional string actionName = 8;             //name of user action
+    optional string url = 9;                    //url of user action
+    optional string query = 10;                 //not used currently
+    optional int64 visitId = 11;                //id of visit
+    optional string visitTag = 12;              //tag of visit
+    optional double userExperienceIndex = 13;   //user experience index of visit
+    optional bool converted = 14;               //visit converted
+    optional double responseTime = 15;          //ms; response time of (user action) purepath
+    optional double cpuTime = 16;               //ms; cpu time of (user action) purepath
+    optional double syncTime = 17;              //ms; sync time of (user action) purepath
+    optional double waitTime = 18;              //ms; wait time of (user action) purepath
+    optional double suspensionTime = 19;        //ms; suspension time of (user action) purepath
+    optional double execTime = 20;              //ms; execution time of (user action) purepath
+    optional double duration = 21;              //ms; duration of (user action) purepath
+    optional bool failed = 22;                  //purepath/user action failed
+     
+    optional int32 nrOfActions = 23;            //number of user actions in visit
+    optional string clientFamily = 24;          //client family of visit (e.g. "Apple iPhone 5")
+    optional string clientIP = 25;              //client ip address of visit
+    optional string continent = 26;             //continent of visit
+    optional string country = 27;               //country of visit
+    optional string city = 28;                  //city of visit
+    optional int32 failedActions = 29;          //number of failed user actions of visit
+    optional int32 clientErrors = 30;           //number of client errors of user action/visit
+    optional bool exitActionFailed = 31;        //last action of visit failed
+    optional bool bounce = 32;                  //bounce visit (i.e. 1 user action/page view)
+    optional string osFamily = 33;              //os family of visit (e.g. "Android")
+    optional string osName = 34;                //os name of visit (e.g. "Android 2.2")
+    optional string connectionType = 35;        //connection type of visit
+    repeated string convertedBy = 36;           //names of visit conversion measures for converted visit
+     
+    optional double clientTime = 37;            //ms; client time of user action
+    optional double networkTime = 38;           //ms; network time of user action
+    optional double serverTime = 39;            //ms; server time of user action
+    optional int32 urlRedirectionTime = 40;     //ms; url redirection duration of user action (w3c navigation timing)
+    optional int32 dnsTime = 41;                //ms; dns duration of user action (w3c navigation timing)
+    optional int32 connectTime = 42;            //ms; connect duration of user action (w3c navigation timing)
+    optional int32 sslTime = 43;                //ms; ssl duration of user action (w3c navigation timing)
+    optional int32 documentRequestTime = 44;    //ms; document request duration of user action (w3c navigation timing)
+    optional int32 documentResponseTime = 45;   //ms; document response duration of user action (w3c navigation timing)
+    optional int32 processingTime = 46;         //ms; processing duration of user action (w3c navigation timing)
+}
